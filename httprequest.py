@@ -4,6 +4,7 @@ class HttpRequest:
         
         self.method: str = None
         self.path: str = None
+        self.query_string: str = None
         self.version: str = None
         self.headers: dict = {}
         self.raw_body: bytearray = None

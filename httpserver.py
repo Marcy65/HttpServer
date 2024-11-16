@@ -122,7 +122,12 @@ class HttpServer:
 
             request = HttpRequest()
             request.method = method.decode()
-            request.path = path.decode()
+            path = path.decode()
+            if "?" in path:
+                request.path, request.query_string = path.split("?", maxsplit=1)
+            else:
+                request.path = path
+                request.query_string = None
             request.version = version.decode()
             request.headers = headers
 
