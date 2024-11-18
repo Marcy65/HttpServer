@@ -96,7 +96,7 @@ class HttpServer:
         finally:
             connection.shutdown(socket.SHUT_RDWR)
             connection.close()
-            self._logger.info(f"{address[0]}:{address[1]} Connection closed")
+            self._logger.info(f"{address[0]}:{address[1]}: Connection closed")
 
         return
     
@@ -104,7 +104,7 @@ class HttpServer:
     def _parse_headers(headers: bytearray) -> HttpRequest:
         
         try:
-
+            # The request line is "GET /index.html HTTP/1.1\r\n"
             request_line_start = 0
             request_line_end = headers.find(b"\r\n")
             request_line = headers[request_line_start:request_line_end]
@@ -113,12 +113,13 @@ class HttpServer:
             header_lines_start = request_line_end + 2
             header_lines_end = headers.find(b"\r\n\r\n")
             header_lines = headers[header_lines_start:header_lines_end]
-            header_lines = header_lines.splitlines()
+            header_lines = header_lines.split(b"\r\n")
 
             headers = {}
             for header in header_lines:
-                key, value = header.split(b": ", maxsplit=1)
-                headers[key.decode()] = value.decode()
+                key, value = header.split(b":", maxsplit=1)
+                # According to RFC 9110: "A field value does not include leading or trailing whitespace"
+                headers[key.decode()] = value.decode().strip()
 
             request = HttpRequest()
             request.method = method.decode()
@@ -212,7 +213,7 @@ class HttpServer:
         response.version = "HTTP/1.1"
         response.headers["Server"] = "HttpServer/1.0"
         response.headers["Date"] = datetime.datetime.now(datetime.UTC).strftime('%a, %d %b %Y %H:%M:%S GMT')
-        
+
         if request.method.upper() not in ["GET"]:
             response.status_code = 405
             response.status = "Method Not Allowed"
