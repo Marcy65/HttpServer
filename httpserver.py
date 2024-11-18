@@ -2,7 +2,7 @@ import socket
 import threading
 import os
 import logging
-from pathlib import Path
+import datetime
 from httprequest import HttpRequest
 from httpresponse import HttpResponse
 from exceptions import MalformedHttpRequest, UnexpectedConnectionClose
@@ -14,7 +14,7 @@ class HttpServer:
         self.host = host
         self.port = port
         self.default_page = "/index.html"
-        self.web_folder = os.path.join(Path(__file__).parent.absolute(), "web_folder")
+        self.web_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "web_folder")
         self._socket: socket.socket = None
 
         logging.basicConfig(
@@ -211,7 +211,8 @@ class HttpServer:
         response = HttpResponse()
         response.version = "HTTP/1.1"
         response.headers["Server"] = "HttpServer/1.0"
-
+        response.headers["Date"] = datetime.datetime.now(datetime.UTC).strftime('%a, %d %b %Y %H:%M:%S GMT')
+        
         if request.method.upper() not in ["GET"]:
             response.status_code = 405
             response.status = "Method Not Allowed"
