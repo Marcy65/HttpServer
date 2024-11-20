@@ -49,10 +49,10 @@ class HttpServer:
         connection.settimeout(30)
 
         try:
+            recv_buffer = bytearray()
             keep_alive = True
             while keep_alive:
                 
-                recv_buffer = bytearray()
                 recv_bufsize = 1024
                 # Keep listening until a valid end of headers sequence is received or the connection is closed
                 while b"\r\n\r\n" not in recv_buffer:
@@ -218,15 +218,15 @@ class HttpServer:
             response.status_code = 405
             response.status = "Method Not Allowed"
             response.headers["Content-Type"] = "text/html; charset=utf-8"
-            response.content = f"""
-            <!DOCTYPE HTML">
-            <html><head>
-            <title>405 Method Not Allowed</title>
-            </head><body>
-            <h1>405 Method Not Allowed</h1>
-            <p>The method <code>{request.method}</code> is inappropriate for this URL.</p>
-            </body></html>
-            """.encode(encoding="utf-8")
+            response.content = (
+                f"<!DOCTYPE HTML>"
+                f"<html><head>"
+                f"<title>405 Method Not Allowed</title>"
+                f"</head><body>"
+                f"<h1>405 Method Not Allowed</h1>"
+                f"<p>The method <code>{request.method}</code> is inappropriate for this URL.</p>"
+                f"</body></html>"
+                )
 
             return response
             
@@ -241,15 +241,15 @@ class HttpServer:
             response.status_code = 404
             response.status = "Not Found"
             response.headers["Content-Type"] = "text/html; charset=utf-8"
-            response.content = f"""
-            <!DOCTYPE HTML">
-            <html><head>
-            <title>404 Not Found</title>
-            </head><body>
-            <h1>404 Not Found</h1>
-            <p>The requested URL was not found on this server.</p>
-            </body></html>
-            """.encode(encoding="utf-8")
+            response.content = (
+                f"<!DOCTYPE HTML>"
+                f"<html><head>"
+                f"<title>404 Not Found</title>"
+                f"</head><body>"
+                f"<h1>404 Not Found</h1>"
+                f"<p>The requested URL was not found on this server.</p>"
+                f"</body></html>"
+                )
 
             return response
         
